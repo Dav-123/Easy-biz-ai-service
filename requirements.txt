@@ -1,0 +1,39 @@
+# FastAPI & Web Framework
+fastapi
+uvicorn
+
+# AI & Language Models
+openai
+langchain
+langchain-openai
+langchain-anthropic
+google-generativeai
+
+# Database (leave the firebase for now maybe when we switch)
+sqlalchemy
+pymysql
+#firebase-admin==6.2.0
+
+# File Processing & Utilities
+pillow
+python-magic
+pypdf2
+python-docx
+
+# Configuration & Environment
+pydantic
+pydantic-settings
+python-dotenv
+
+# Async & Utilities
+aiofiles
+asyncio
+python-multipart
+
+# HTTP Client
+httpx
+requests
+
+# Development (optional)
+pytest
+pytest-asyncio
