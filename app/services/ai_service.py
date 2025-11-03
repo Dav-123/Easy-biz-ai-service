@@ -2,8 +2,8 @@ import uuid
 import asyncio
 from typing import Dict, Any, Optional
 import json
-from langchain.llms import OpenAI
-from langchain.chat_models import ChatOpenAI, ChatAnthropic
+from langchain_openai import OpenAI
+from langchain_anthropic import ChatAnthropic
 import google.generativeai as genai
 import openai
 from app.core.config import settings
@@ -25,7 +25,7 @@ class AIService:
 
     def _setup_clients(self):
         if self.available_models["openai_text"]:
-            self.openai_llm = ChatOpenAI(
+            self.openai_llm = OpenAI(
                 openai_api_key=settings.OPENAI_API_KEY,
                 model_name="gpt-4",
                 temperature=0.7
