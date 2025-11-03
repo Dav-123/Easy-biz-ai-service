@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.endpoints import generation, health
+from app.api.endpoints import health, generation
 
-app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION)
+app = FastAPI(title="EasyBiz AI Service", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -11,10 +11,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(health.router, prefix=settings.API_V1_STR)
-app.include_router(generation.router, prefix=settings.API_V1_STR)
+app.include_router(health.router, prefix="/api/v1")
+app.include_router(generation.router, prefix="/api/v1")
 
-
-@app.get('/')
+@app.get("/")
 async def root():
-    return {"message": "Easybiz Ai Service", "status": "running"}
+    return {"message": "EasyBiz AI Service", "status": "running"}
