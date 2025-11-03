@@ -6,7 +6,6 @@ from langchain_openai import OpenAI
 from langchain_anthropic import ChatAnthropic
 import google.generativeai as genai
 import openai
-from app.core.config import settings
 
 
 class AIService:
@@ -16,30 +15,30 @@ class AIService:
 
     def _check_available_models(self) -> Dict[str, bool]:
         return {
-            "openai_text": bool(settings.OPENAI_API_KEY),
-            "claude_text": bool(settings.CLAUDE_API_KEY),
-            "gemini_text": bool(settings.GEMINI_API_KEY),
-            "openai_image": bool(settings.OPENAI_API_KEY),
-            "gemini_image": bool(settings.GEMINI_API_KEY)
+            "openai_text": bool(OPENAI_API_KEY),
+            "claude_text": bool(CLAUDE_API_KEY),
+            "gemini_text": bool(GEMINI_API_KEY),
+            "openai_image": bool(OPENAI_API_KEY),
+            "gemini_image": bool(GEMINI_API_KEY)
         }
 
     def _setup_clients(self):
         if self.available_models["openai_text"]:
             self.openai_llm = OpenAI(
-                openai_api_key=settings.OPENAI_API_KEY,
+                openai_api_key=OPENAI_API_KEY,
                 model_name="gpt-4",
                 temperature=0.7
             )
 
         if self.available_models["claude_text"]:
             self.claude_llm = ChatAnthropic(
-                anthropic_api_key=settings.CLAUDE_API_KEY,
+                anthropic_api_key=CLAUDE_API_KEY,
                 model="claude-2",
                 temperature=0.7
             )
 
         if self.available_models["gemini_text"]:
-            genai.configure(api_key=settings.GEMINI_API_KEY)
+            genai.configure(api_key=GEMINI_API_KEY)
             self.gemini_llm = genai.GenerativeModel('gemini-pro')
 
     async def generate_text(self, prompt: str, context: Dict[str, Any]) -> Dict[str, Any]:
