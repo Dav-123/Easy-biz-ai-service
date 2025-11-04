@@ -1,10 +1,11 @@
 from fastapi import APIRouter
 from datetime import datetime
-from app.models.schemas import HealthResponse
+from app.modals.schemas import HealthResponse
 from app.services.ai_service import AIService
 
 router = APIRouter()
 ai_service = AIService()
+
 
 @router.get("/health", response_model=HealthResponse)
 async def health_check():
