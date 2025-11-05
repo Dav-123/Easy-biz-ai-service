@@ -2,7 +2,8 @@ import uuid
 import asyncio
 from typing import Dict, Any, Optional
 import json
-from langchain_openai import OpenAI
+import os
+from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 import google.generativeai as genai
 import openai
@@ -15,31 +16,34 @@ class AIService:
 
     def _check_available_models(self) -> Dict[str, bool]:
         return {
-            "openai_text": bool(OPENAI_API_KEY),
-            "claude_text": bool(CLAUDE_API_KEY),
-            "gemini_text": bool(GEMINI_API_KEY),
-            "openai_image": bool(OPENAI_API_KEY),
-            "gemini_image": bool(GEMINI_API_KEY)
+            "openai_text": bool(os.getenv("OPENAI_API_KEY")),
+            "claude_text": bool(os.getenv("CLAUDE_API_KEY")),
+            "gemini_text": bool(os.getenv("GEMINI_API_KEY")),
+            "openai_image": bool(os.getenv("OPENAI_API_KEY")),
+            "gemini_image": bool(os.getenv("GEMINI_API_KEY"))
         }
 
     def _setup_clients(self):
         if self.available_models["openai_text"]:
-            self.openai_llm = OpenAI(
-                openai_api_key=OPENAI_API_KEY,
+            self.openai_llm = ChatOpenAI(
+                openai_api_key=os.getenv("OPENAI_API_KEY"),
                 model_name="gpt-4",
                 temperature=0.7
             )
 
         if self.available_models["claude_text"]:
             self.claude_llm = ChatAnthropic(
-                anthropic_api_key=CLAUDE_API_KEY,
+                anthropic_api_key=os.getenv("CLAUDE_API_KEY"),
                 model="claude-2",
                 temperature=0.7
             )
 
         if self.available_models["gemini_text"]:
-            genai.configure(api_key=GEMINI_API_KEY)
+            genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
             self.gemini_llm = genai.GenerativeModel('gemini-pro')
+
+        if self.available_models["openai_image"]:
+            openai.api_key = os.getenv("OPENAI_API_KEY")
 
     async def generate_text(self, prompt: str, context: Dict[str, Any]) -> Dict[str, Any]:
         try:
@@ -90,7 +94,8 @@ class AIService:
         enhanced_prompt = f"Professional {style} style: {
             description}. Clean, modern business design."
 
-        response = openai.Image.create(
+        client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        response = client.images.generate(
             prompt=enhanced_prompt,
             n=1,
             size="1024x1024",
@@ -98,7 +103,7 @@ class AIService:
         )
 
         return {
-            "image_url": response['data'][0]['url'],
+            "image_url": response.data[0].url,
             "description": description,
             "style": style
         }
@@ -107,9 +112,7 @@ class AIService:
         enhanced_prompt = f"Create a professional {
             style} style image: {description}"
 
-        # Note: Gemini's image generation might be different
         # This is a placeholder for Gemini's image generation API
-        # We would adjust this later dconco or you can check it for me
         response = self.gemini_llm.generate_content(enhanced_prompt)
 
         return {
@@ -139,10 +142,8 @@ class AIService:
 
     def _parse_ai_response(self, response_text: str) -> Dict[str, Any]:
         try:
-            # Try to parse as JSON first
             return json.loads(response_text.strip())
         except json.JSONDecodeError:
-            # If not JSON, structure it as text content
             return {
                 "content": response_text.strip(),
                 "type": "text_response"
