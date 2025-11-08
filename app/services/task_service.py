@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from typing import Dict, Any
-from app.models.schemas import TaskStatus
+from app.modals.schemas import TaskStatus
 
 class TaskService:
     def __init__(self):
